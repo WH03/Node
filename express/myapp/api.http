@@ -1,0 +1,14 @@
+
+# 获取所有的
+GET http://localhost:3000/api/todos
+Content-Type: application/json
+
+# 获取已经完成的
+GET http://localhost:3000/api/todos/?completed=true
+Content-Type:application/json
+
+
+
+
+
+

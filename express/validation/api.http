@@ -1,0 +1,57 @@
+### Get a list of todos
+GET http://localhost:3000/todos
+
+
+### Get completed todo items
+GET http://localhost:3000/todos/?completed=true
+
+
+### Get a list of todo items with wrong query string
+GET http://localhost:3000/todos/?completed=abc
+
+### Create a new todo item
+POST http://localhost:3000/todos
+Content-Type: application/json
+
+{
+    "title": "todo 1",
+    "completed": false
+}
+
+### 400 bad data (empty  body)
+POST http://localhost:3000/todos 
+Content-Type: application/json
+
+{    
+}
+
+
+### Get a todo with id 1
+GET http://localhost:3000/todos/1
+
+### Get a todo with id abc (400)
+GET http://localhost:3000/todos/0
+
+### Update a todo item with id 1
+PUT http://localhost:3000/todos/1
+Content-Type: application/json
+
+{
+    "title": "todo 1",
+    "completed": true
+}
+
+
+
+### Update a todo item with id but not completed field
+PUT http://localhost:3000/todos/1
+Content-Type: application/json
+
+{
+    "completed": false
+}
+
+### Delete a todo with id 1
+DELETE http://localhost:3000/todos/1
+
+
