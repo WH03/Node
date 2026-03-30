@@ -5,7 +5,7 @@ const app = express();
 
 // TODO_01：安装并导入 JWT 相关的两个包，分别是 jsonwebtoken 和 express-jwt
 const jwt = require("jsonwebtoken"); // 用于生成和验证 token
-const expressJWT = require("express-jwt"); // 用于解析 token
+const expressJWT = require('express-jwt') // 用于解析 token
 
 // 允许跨域资源共享
 const cors = require("cors");
@@ -16,8 +16,10 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // TODO_02：定义 secret 密钥，建议将密钥命名为 secretKey
-
+const secretKey = 'itheima No1 ^_^'
 // TODO_04：注册将 JWT 字符串解析还原成 JSON 对象的中间件
+// app.use(expressJWT({ secret: secretKey }).unless({ path: [/^\/api\//] }))
+app.use(expressJWT({ secret: secretKey }).unless({ path: [/^\/api\//] }))
 
 // 登录接口
 app.post("/api/login", function (req, res) {
@@ -32,24 +34,44 @@ app.post("/api/login", function (req, res) {
   }
   // 登录成功
   // TODO_03：在登录成功之后，调用 jwt.sign() 方法生成 JWT 字符串。并通过 token 属性发送给客户端
+  /* 
+    参数1：用户的信息对象
+    参数2：加密的秘钥
+    参数3：配置对象，可以配置当前token的有效期
+  */
+  const tokenStr = jwt.sign({ username: userinfo.username }, secretKey, { expiresIn: '30s' })
   res.send({
     status: 200,
     message: "登录成功！",
-    token: "", // 要发送给客户端的 token 字符串
+    token: tokenStr, // 要发送给客户端的 token 字符串
   });
 });
 
 // 这是一个有权限的 API 接口
 app.get("/admin/getinfo", function (req, res) {
   // TODO_05：使用 req.user 获取用户信息，并使用 data 属性将用户信息发送给客户端
+  console.log('用户信息：', req.user)
   res.send({
     status: 200,
     message: "获取用户信息成功！",
-    data: {}, // 要发送给客户端的用户信息
+    data: req.user, // 要发送给客户端的用户信息
   });
 });
 
 // TODO_06：使用全局错误处理中间件，捕获解析 JWT 失败后产生的错误
+app.use((err, req, res, next) => {
+  // 这次错误是由token解析失败导致的
+  if (err.name === 'UnauthorizedError') {
+    return res.send({
+      status: 401,
+      message: '无效的token'
+    })
+  }
+  res.send({
+    status:500,
+    message:'未知的错误！'
+  })
+})
 
 // 调用 app.listen 方法，指定端口号并启动web服务器
 app.listen(8888, function () {
