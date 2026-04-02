@@ -1,6 +1,9 @@
 // 导入数据库操作模块
 const db = require("../db/index");
 
+// 导入bcryptjs这个包
+const bcrypt = require('bcryptjs')
+
 // 注册新用户的处理函数
 exports.regUser = (req, res) => {
   // 获取客户端提交到服务器的用户信息
@@ -30,7 +33,19 @@ exports.regUser = (req, res) => {
     }
 
     // TODO: 用户名可用，继续后续操作...
-    console.log('添加成功')
+    // 调用bcrypt.hashSync()对密码进行加密
+    userinfo.password = bcrypt.hashSync(userinfo.password, 10)
+
+    // 定义插入新用户的SQL语句
+    const sql = 'insert into ev_users set ?'
+    db.query(sql, { username: userinfo.username, password: userinfo.password }, (err, results) => {
+      // 判断SQL语句是否执行成功
+      if (err) return res.send({ status: 1, message: err.message })
+      // 判断影响行数是否为1
+      if (results.affectedRows !== 1) return res.send({ status: 1, message: '注册用户失败，请稍后再试！' })
+      // 注册成功
+      res.send({ status: 0, message: '注册成功！' })
+    })
   });
 
   // res.send("reguser ok");
