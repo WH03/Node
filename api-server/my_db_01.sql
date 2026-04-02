@@ -1,0 +1,1 @@
+SELECT * FROM my_db_01.ev_users;
