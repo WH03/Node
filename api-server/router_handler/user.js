@@ -10,12 +10,12 @@ exports.regUser = (req, res) => {
   const userinfo = req.body;
   // console.log("@userinfo用户信息:", userinfo);
   // 对表单中的数据，进行合法性校验
-  if (!userinfo.username || !userinfo.password) {
-    return res.send({
-      status: 1, // 1 表示失败
-      message: "用户名或密码不合法!",
-    });
-  }
+  // if (!userinfo.username || !userinfo.password) {
+  //   return res.send({
+  //     status: 1, // 1 表示失败
+  //     message: "用户名或密码不合法!",
+  //   });
+  // }
 
   // 定义sql语句，查询用户名是否被占用
   const sqlStr = "select * from ev_users where username=?";
