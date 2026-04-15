@@ -3,6 +3,8 @@ const express = require("express");
 // 创建express实例
 const app = express();
 
+const joi = require("joi");
+
 // 导入cors
 const cors = require("cors");
 // 注册cors中间件
@@ -19,15 +21,35 @@ app.use((req, res, next) => {
     res.send({
       status,
       message: err instanceof Error ? err.message : err,
-    })
-  }
-  next()
-})
+    });
+  };
+  next();
+});
 
+// 导入配置解析token的中间件
+const expressJWT = require("express-jwt");
+const config = require("./config");
+
+app.use(
+  expressJWT({ secret: config.jwtSecretKey }).unless({ path: [/^\/api/] })
+);
 
 // 导入并使用路由模块
 const userRouter = require("./router/user");
 app.use("/api", userRouter);
+
+const userinfoRouter = require("./router/userinfo");
+app.use("/my", userinfoRouter); 
+
+// 定义错误级别的中间件
+app.use((err, req, res, next) => {
+  // 验证失败导致的错误
+  if (err instanceof joi.ValidationError) return res.cc(err);
+  // 身份认证失败错误
+  if (err.name === "UnauthorizedError") return res.cc("身份认证失败！");
+  // 未知错误
+  res.cc(err);
+});
 
 // 启动服务器
 app.listen(3007, () => {
