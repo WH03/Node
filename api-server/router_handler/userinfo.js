@@ -69,3 +69,19 @@ exports.updatePassword = (req, res) => {
     });
   });
 };
+
+// 更新用户头像的处理函数
+exports.updateAvatar = (req, res) => {
+  // 定义更新用户头像的SQL语句
+  const sql = `update ev_users set user_pic=? where id=?`;
+  console.log(req.user.id);
+  // 执行SQL语句，更新用户头像
+  db.query(sql, [req.body.avatar, req.user.id], (err, results) => {
+    // 执行SQL语句失败
+    if (err) return res.cc(err);
+    // 判断影响行数是否为1
+    if (results.affectedRows !== 1) return res.cc("更新头像失败！");
+    // 更新头像成功
+    res.cc("更新头像成功！", 0);
+  });
+};
